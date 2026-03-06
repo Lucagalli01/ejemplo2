@@ -1,0 +1,11 @@
+# netlify.toml — Configuración de Netlify para Revista La Fractura
+
+[build]
+  publish = "."     # el sitio vive en la raíz del repositorio
+
+# Habilita Netlify Identity y Git Gateway (necesarios para el CMS)
+[[headers]]
+  for = "/admin/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
