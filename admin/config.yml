@@ -1,6 +1,6 @@
 backend:
   name: github
-  repo: TU-USUARIO/TU-REPOSITORIO   # ← CAMBIAR por tu usuario y repo de GitHub
+  repo: lucagalli01/ejemplo2   # ← CAMBIAR por tu usuario y repo de GitHub
   branch: main
 
 media_folder: "imagenes"
