@@ -1,6 +1,5 @@
 backend:
-  name: github
-  repo: lucagalli01/ejemplo2
+  name: git-gateway
   branch: main
 
 media_folder: "imagenes"
