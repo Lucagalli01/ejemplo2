@@ -11,8 +11,8 @@
 // ── CONFIGURACIÓN ─────────────────────────────────────────────────────────────
 const CONFIG = {
   // Cambiá estos valores por los de tu repositorio
-  GITHUB_USER: 'TU-USUARIO',
-  GITHUB_REPO: 'TU-REPOSITORIO',
+  GITHUB_USER: 'lucagalli01',
+  GITHUB_REPO: 'ejemplo2',
   BRANCH: 'main',
   // URL base de tus imágenes (carpeta /imagenes en el repo)
   IMG_BASE: '/imagenes/',
