@@ -11,8 +11,8 @@
 // ── CONFIGURACIÓN ─────────────────────────────────────────────────────────────
 const CONFIG = {
   // Cambiá estos valores por los de tu repositorio
-  GITHUB_USER: 'lucagalli01',
-  GITHUB_REPO: 'ejemplo2',
+  GITHUB_USER: 'TU-USUARIO',
+  GITHUB_REPO: 'TU-REPOSITORIO',
   BRANCH: 'main',
   // URL base de tus imágenes (carpeta /imagenes en el repo)
   IMG_BASE: '/imagenes/',
@@ -136,8 +136,8 @@ async function renderIndex() {
   const resto = articulos.filter(a => a !== destacado).slice(0, 5);
 
   // Artículo destacado
-  const featImg = document.querySelector('.featured-img');
-  const featInfo = document.querySelector('.featured-info');
+  const featImg = document.querySelector('#featured-article .featured-img');
+  const featInfo = document.querySelector('#featured-article .featured-info');
   if (featImg && featInfo) {
     featImg.href = `articulo.html?slug=${destacado.slug}&tipo=articulos`;
     featImg.querySelector('img').src = imgSrc(destacado.imagen);
@@ -158,7 +158,7 @@ async function renderIndex() {
   }
 
   // Lista de cards
-  const lista = document.querySelector('.articles-list');
+  const lista = document.querySelector('#articles-list');
   if (lista && resto.length) {
     lista.innerHTML = resto.map(a => `
       <li class="article-card">
@@ -181,7 +181,7 @@ async function renderIndex() {
   }
 
   // Sidebar - lo más leído (simplemente los primeros 3)
-  const popularList = document.querySelector('.popular-list');
+  const popularList = document.querySelector('#popular-list');
   if (popularList) {
     popularList.innerHTML = articulos.slice(0, 3).map((a, i) => `
       <li class="popular-item">
@@ -201,27 +201,52 @@ async function renderIndex() {
  */
 async function renderArticulos() {
   const articulos = await fetchCollection('_articulos');
-  const container = document.querySelector('#articulos-grid, .articles-list, .articulos-grid');
-  if (!container || !articulos.length) return;
+  if (!articulos.length) return;
 
-  container.innerHTML = articulos.map(a => `
-    <li class="article-card">
-      <a class="card-img" href="articulo.html?slug=${a.slug}&tipo=articulos">
-        <img src="${imgSrc(a.imagen)}" alt="${a.titulo}">
-      </a>
-      <div class="card-info">
-        ${tagHtml(a.categoria)}
-        <h3 class="card-title">
-          <a href="articulo.html?slug=${a.slug}&tipo=articulos">${a.titulo}</a>
-        </h3>
-        <p class="card-excerpt">${a.bajada || ''}</p>
-        <div class="article-meta">
-          <span><strong>${a.autor || ''}</strong></span>
-          <span><strong>${a.fecha || ''}</strong></span>
-          <span><strong>${a.lectura || ''}</strong></span>
-        </div>
+  const destacado = articulos.find(a => a.destacado === 'true') || articulos[0];
+  const resto = articulos.filter(a => a !== destacado);
+
+  // Featured
+  const featEl = document.querySelector('#art-featured');
+  if (featEl) {
+    const imgLink = featEl.querySelector('.art-featured-img');
+    const info = featEl.querySelector('.art-featured-info');
+    if (imgLink) { imgLink.href = `articulo.html?slug=${destacado.slug}&tipo=articulos`; imgLink.querySelector('img').src = imgSrc(destacado.imagen); }
+    if (info) info.innerHTML = `
+      <div>
+        ${tagHtml(destacado.categoria)}
+        <h2 class="art-title-lg"><a href="articulo.html?slug=${destacado.slug}&tipo=articulos">${destacado.titulo}</a></h2>
+        <p class="art-excerpt">${destacado.bajada || ''}</p>
       </div>
-    </li>`).join('');
+      <div class="art-meta">
+        <span><strong>${destacado.autor || ''}</strong></span>
+        <span><strong>${destacado.fecha || ''}</strong></span>
+        <span><strong>${destacado.lectura || ''}</strong></span>
+      </div>`;
+  }
+
+  // List
+  const lista = document.querySelector('#art-list');
+  if (lista) {
+    lista.innerHTML = resto.map(a => `
+      <li class="art-row">
+        <a class="art-row-img" href="articulo.html?slug=${a.slug}&tipo=articulos"><img src="${imgSrc(a.imagen)}" alt="${a.titulo}"></a>
+        <div class="art-row-info">
+          <div>${tagHtml(a.categoria)}<h3 class="art-title-sm"><a href="articulo.html?slug=${a.slug}&tipo=articulos">${a.titulo}</a></h3><p class="art-excerpt-sm">${a.bajada || ''}</p></div>
+          <div class="art-meta"><span><strong>${a.autor || ''}</strong></span><span><strong>${a.fecha || ''}</strong></span><span><strong>${a.lectura || ''}</strong></span></div>
+        </div>
+      </li>`).join('');
+  }
+
+  // Sidebar más leído
+  const popList = document.querySelector('#pop-list');
+  if (popList) {
+    popList.innerHTML = articulos.slice(0, 4).map((a, i) => `
+      <li class="pop-item">
+        <span class="pop-num">0${i + 1}</span>
+        <div><p class="pop-title"><a href="articulo.html?slug=${a.slug}&tipo=articulos">${a.titulo}</a></p><p class="pop-author">${a.autor || ''}</p></div>
+      </li>`).join('');
+  }
 }
 
 /**
@@ -229,27 +254,21 @@ async function renderArticulos() {
  */
 async function renderEntrevistas() {
   const items = await fetchCollection('_entrevistas');
-  const container = document.querySelector('#entrevistas-grid, .entrevistas-list, .articles-list');
+  const container = document.querySelector('#ep-grid');
   if (!container || !items.length) return;
 
   container.innerHTML = items.map(a => `
-    <li class="article-card">
-      <a class="card-img" href="articulo.html?slug=${a.slug}&tipo=entrevistas">
+    <article class="ep-card">
+      <div class="ep-card-img">
         <img src="${imgSrc(a.imagen)}" alt="${a.titulo}">
-      </a>
-      <div class="card-info">
-        <span class="tag celeste">Entrevista</span>
-        <h3 class="card-title">
-          <a href="articulo.html?slug=${a.slug}&tipo=entrevistas">${a.titulo}</a>
-        </h3>
-        <p class="card-excerpt">${a.bajada || ''}</p>
-        <div class="article-meta">
-          <span><strong>${a.entrevistado || ''}</strong></span>
-          <span><strong>${a.fecha || ''}</strong></span>
-          <span><strong>${a.lectura || ''}</strong></span>
-        </div>
+        <div class="ep-card-overlay"><div class="play-sm">▶</div></div>
       </div>
-    </li>`).join('');
+      <div class="ep-card-info">
+        <p class="ep-card-num">Entrevista — ${a.fecha || ''}</p>
+        <h3 class="ep-card-title"><a href="articulo.html?slug=${a.slug}&tipo=entrevistas">${a.titulo}</a></h3>
+        <div class="ep-card-meta"><span>${a.lectura || ''}</span><span>${a.entrevistado || ''}</span></div>
+      </div>
+    </article>`).join('');
 }
 
 /**
@@ -257,16 +276,22 @@ async function renderEntrevistas() {
  */
 async function renderColumnistas() {
   const perfiles = await fetchCollection('_columnistas');
-  const container = document.querySelector('#columnistas-grid, .columnistas-grid');
+  const container = document.querySelector('#authors-grid');
   if (!container || !perfiles.length) return;
 
+  const COLORES = { 'Política': 'verde', 'Economía': '', 'Cultura': 'oro', 'Medio Ambiente': 'verde', 'Derechos Humanos': 'rojo', 'Género': 'rojo', 'Internacional': 'celeste' };
+
   container.innerHTML = perfiles.map(c => `
-    <div class="columnista-card">
-      <img src="${imgSrc(c.foto)}" alt="${c.nombre}" 
-           style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid var(--negro);">
-      <h3 style="font-family:'Playfair Display',serif;font-size:1.1rem;margin:12px 0 4px;">${c.nombre}</h3>
-      <p style="font-family:'Space Mono',monospace;font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--rojo);margin-bottom:10px;">${c.especialidad || ''}</p>
-      <p style="font-size:0.85rem;color:#555;line-height:1.6;">${c.bio || ''}</p>
+    <div class="author-card">
+      <div class="ac-portrait"><img src="${imgSrc(c.foto)}" alt="${c.nombre}"></div>
+      <div class="ac-info">
+        <div>
+          <h3 class="ac-name"><a href="#">${c.nombre}</a></h3>
+          <p class="ac-role">${c.especialidad || ''}</p>
+          <span class="ac-tag ${COLORES[c.especialidad] || ''}">${c.especialidad || ''}</span>
+        </div>
+        <p style="font-size:0.8rem;color:#666;line-height:1.5;margin-top:8px;">${c.bio ? c.bio.substring(0, 90) + '…' : ''}</p>
+      </div>
     </div>`).join('');
 }
 
